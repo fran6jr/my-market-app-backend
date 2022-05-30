@@ -29,6 +29,16 @@ class Database
         }
         return false;
     }
+
+    public function createRemove($query = "", $params = []) {
+        try {
+            $stmt = $this->executeStatement( $query, $params );
+            $stmt->close();
+            
+        } catch(Exception $e) {
+            throw New Exception( $e->getMessage() );
+        }
+    }
  
     private function executeStatement($query = "", $params = [])
     {
@@ -40,7 +50,7 @@ class Database
             }
  
             if( $params ) {
-                $stmt->bind_param($params[0], $params[1]);
+                $stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6], $params[7]);
             }
  
             $stmt->execute();

@@ -11,18 +11,44 @@ class ProductController extends BaseController
             try {
                 $ProductModel = new ProductModel();
  
-                // $intLimit = 10;
-                // if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {
-                //     $intLimit = $arrQueryStringParams['limit'];
-                // }
+                $intLimit = 100;
+                if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {
+                    $intLimit = $arrQueryStringParams['limit'];
+                }
  
-                $arrProducts = $ProductModel->getProducts();
+                $arrProducts = $ProductModel->getProducts($intLimit);
                 $responseData = json_encode($arrProducts);
             } catch (Error $e) {
                 $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
                 $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
             }
-        } else {
+        }else if (strtoupper($requestMethod) == 'POST') {// let us check if that sku already exists
+            
+            if (isset($arrQueryStringParams['add']) && $arrQueryStringParams['add']){
+
+            $product = json_decode(file_get_contents("php://input"));
+            
+            try {
+                $ProductModel = new ProductModel();
+                $arrProducts = $ProductModel->addProduct($product);
+            } catch (Error $e) {
+                $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
+                $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
+            }
+        }
+        else if (isset($arrQueryStringParams['delete']) && $arrQueryStringParams['delete']) {// for delete we should only send an array of skus
+
+            $products = json_decode(file_get_contents("php://input"));
+            try {
+                $ProductModel = new ProductModel();
+                $arrProducts = $ProductModel->removeProducts($products);
+            } catch (Error $e) {
+                $strErrorDesc = $e->getMessage().'Something went wrong! Please contact support.';
+                $strErrorHeader = 'HTTP/1.1 500 Internal Server Error';
+            }
+        } 
+    }
+    else {
             $strErrorDesc = 'Method not supported';
             $strErrorHeader = 'HTTP/1.1 422 Unprocessable Entity';
         }
