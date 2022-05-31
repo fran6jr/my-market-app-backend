@@ -1,7 +1,7 @@
 <?php
 require __DIR__ . "/inc/bootstrap.php";
 
-// echo("this is live");
+echo("this is live");
  
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );

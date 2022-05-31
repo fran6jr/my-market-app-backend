@@ -21,14 +21,14 @@ class ProductModel extends Database
         $width = $product["width"] ? $product["width"] : NULL;
         $length = $product["length"] ? $product["length"] : NULL;
 
-        return $this-createRemove("INSERT INTO products values(?, ?, ?, ?, ?, ?, ?, ?);", ["i", $sku, $name, $price, $size, $weight, $height, $width, $length]);
+        return $this->createRemove("INSERT INTO products values(?, ?, ?, ?, ?, ?, ?, ?);", ["i", $sku, $name, $price, $size, $weight, $height, $width, $length]);
     }
 
     public function removeProducts($products = [])
     {
         $sku = array($products);
         $clause = implode(',', array_fill(0, count($sku), '?'));
-        return $this-createRemove("DELETE FROM products WHERE sku in (" . $clause . ");");
+        return $this->createRemove("DELETE FROM products WHERE sku in (" . $clause . ");");
     }
 
 }
