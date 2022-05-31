@@ -1,7 +1,6 @@
 <?php
 require __DIR__ . "/inc/bootstrap.php";
 
-echo("this is live");
  
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
@@ -14,8 +13,12 @@ if ((isset($uri[2]) && $uri[2] != 'product') || !isset($uri[3])) {
 require PROJECT_ROOT_PATH . "/Controller/Api/ProductController.php";
  
 $objFeedController = new ProductController();
-$strMethodName = $uri[3] . 'Action';
+$strMethodName = 'product' . strtoupper($uri[3]) . 'Action';
+echo("this is live\n");
 $objFeedController->{$strMethodName}();
+echo("this is the end");
 
-// call http://localhost/index.php/product/list?limit=100
+// list http://localhost/index.php/product/list
+// add http://localhost/index.php/product/add
+// delete http://localhost/index.php/product/delete
 ?>

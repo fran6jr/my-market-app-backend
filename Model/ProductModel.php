@@ -5,6 +5,7 @@ class ProductModel extends Database
 {
     public function getProducts($limit)
     {
+        echo("GET Products\n");
         return $this->select("SELECT * FROM products LIMIT ?;", ["i", $limit]);
     }
 
@@ -21,7 +22,13 @@ class ProductModel extends Database
         $width = $product["width"] ? $product["width"] : NULL;
         $length = $product["length"] ? $product["length"] : NULL;
 
-        return $this->createRemove("INSERT INTO products values(?, ?, ?, ?, ?, ?, ?, ?);", ["i", $sku, $name, $price, $size, $weight, $height, $width, $length]);
+        $sqlctrl = $this->select("SELECT COUNT(*) FROM products WHERE sku=?;",["i", $sku]);
+
+        if($sqlctrl == "0") {
+            return $this->createRemove("INSERT INTO products values(?, ?, ?, ?, ?, ?, ?, ?);", ["i", $sku, $name, $price, $size, $weight, $height, $width, $length]);
+        }
+
+        return "product exists";
     }
 
     public function removeProducts($products = [])
