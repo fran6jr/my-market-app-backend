@@ -1,7 +1,7 @@
 <?php
 class ProductController extends BaseController
 {
-    public function productLISTAction()
+    public function listAction()
     {
         echo("Product List\n");
         $strErrorDesc = '';
@@ -46,7 +46,7 @@ class ProductController extends BaseController
         
     }
 
-    public function productADDAction() {
+    public function addAction() {
         echo("Product Add\n");
         $strErrorDesc = '';
         $requestMethod = $_SERVER["REQUEST_METHOD"];
@@ -86,7 +86,7 @@ class ProductController extends BaseController
         }
     }
 
-    public function productDELETEAction() {
+    public function deleteAction() {
         echo("Product Delete\n");
         $strErrorDesc = '';
         $requestMethod = $_SERVER["REQUEST_METHOD"];

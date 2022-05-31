@@ -7,13 +7,17 @@ class Database
     {
         try {
             // echo("Connecting to MySQL");
+            echo("Model Constructor");
             $this->connection = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
+            echo("After Database Connection");
             // echo("After Connecting to MySQL");
 
             if ( mysqli_connect_errno()) {
+                echo("Cannot Connect");
                 throw new Exception("Could not connect to database.");   
             }
         } catch (Exception $e) {
+            echo("Exception leading to Getmessage");
             throw new Exception($e->getMessage());   
         }           
     }

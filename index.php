@@ -13,7 +13,7 @@ if ((isset($uri[2]) && $uri[2] != 'product') || !isset($uri[3])) {
 require PROJECT_ROOT_PATH . "/Controller/Api/ProductController.php";
  
 $objFeedController = new ProductController();
-$strMethodName = 'product' . strtoupper($uri[3]) . 'Action';
+$strMethodName = $uri[3] . 'Action';
 echo("this is live\n");
 $objFeedController->{$strMethodName}();
 echo("this is the end");
