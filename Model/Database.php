@@ -7,9 +7,7 @@ class Database
     {
         try {
             // echo("Connecting to MySQL");
-            echo("Model Constructor");
             $this->connection = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
-            echo("After Database Connection");
             // echo("After Connecting to MySQL");
 
             if ( mysqli_connect_errno()) {
@@ -25,8 +23,8 @@ class Database
     public function select($query = "", $params = [])
     {
         try {
-        $stmt = $this->executeStatement( $query , $params);
-            $product = $stmt->get_product()->fetch_all(MYSQLI_ASSOC);               
+            $stmt = $this->executeStatement( $query , $params);
+            $product = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);               
             $stmt->close();
  
             return $product;
@@ -55,7 +53,11 @@ class Database
                 throw New Exception("Unable to do prepared statement: " . $query);
             }
  
-            if( $params ) {
+            if( $params) {
+                if ( count($params) == 2 )
+                $stmt->bind_param($params[0], $params[1]); 
+
+                if ( count($params) > 3 )
                 $stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6], $params[7]);
             }
  

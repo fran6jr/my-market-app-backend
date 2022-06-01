@@ -10,8 +10,6 @@ class ProductController extends BaseController
  
         if (strtoupper($requestMethod) == 'GET') {
             try {
-                echo("GET Try\n");
-                echo("GET Confirmation\n");
                 $ProductModel = new ProductModel();
                 echo("After GET Try\n");
  
