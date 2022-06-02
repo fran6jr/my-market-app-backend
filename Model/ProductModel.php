@@ -5,14 +5,11 @@ class ProductModel extends Database
 {
     public function getProducts($limit)
     {
-        // echo("GET Products\n");
         return $this->select("SELECT * FROM products LIMIT ?;", ["i", $limit]);
     }
 
     public function addProduct($product)
     {
-        // $product = json_decode(file_get_contents("php://input"));
-        //echo(json_encode($product));
         $sku = $product->sku;
         echo($sku);
         $name = $product->name;
@@ -31,7 +28,6 @@ class ProductModel extends Database
         $params = ["s", $sku];
         $result = $this->select($sql, $params);
         $count = $result[0]["COUNT(*)"];
-        echo($count);
         
         if (!$price || !$name || !$sku)
             $error = "Missing required fields";
@@ -69,10 +65,6 @@ class ProductModel extends Database
             $error = "Product name cannot be empty";
         else if($count > 0)
             $error = "Product exists";
-
-            echo($count);
-    
-            echo($error);
 
         if ($error)
             throw new Exception($error);
