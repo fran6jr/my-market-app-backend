@@ -96,7 +96,6 @@ class ProductModel extends Database
 
     public function removeProducts($skus = [])
     {
-
         $sql = "DELETE FROM products WHERE sku IN (";
         $params = [];
         $params[] = "s";
