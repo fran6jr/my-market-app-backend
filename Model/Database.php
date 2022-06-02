@@ -35,33 +35,37 @@ class Database
     }
 
     public function createRemove($query = "", $params = []) {
+        echo("createRemove");
+        
+        echo($query);
+        
         try {
-            $stmt = $this->executeStatement( $query, $params );
+            $stmt = $this->executeStatement( $query , $params);
             $stmt->close();
-            
+            return true;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );
         }
+        echo("createRemove Ends");
+        return false;
     }
  
     private function executeStatement($query = "", $params = [])
     {
+        
         try {
             $stmt = $this->connection->prepare( $query );
  
             if($stmt === false) {
                 throw New Exception("Unable to do prepared statement: " . $query);
             }
- 
-            if( $params) {
-                if ( count($params) == 2 )
-                $stmt->bind_param($params[0], $params[1]); 
 
-                if ( count($params) == 5 )
-                $stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4]);
-
-                if ( count($params) == 7 )
-                $stmt->bind_param($params[0], $params[1], $params[2], $params[3], $params[4], $params[5], $params[6], $params[7]);
+            if(count($params) > 0) {
+                $refs = array();
+                foreach($params as $key => $value) {
+                    $refs[$key] = &$params[$key];
+                }
+                call_user_func_array(array($stmt, 'bind_param'), $refs);
             }
  
             $stmt->execute();
@@ -69,6 +73,7 @@ class Database
             return $stmt;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );
-        }   
+        }
+        return false;
     }
 }

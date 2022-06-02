@@ -12,21 +12,26 @@ class ProductModel extends Database
     public function addProduct($product)
     {
         // $product = json_decode(file_get_contents("php://input"));
-        
-        $sku = $product["sku"];
-        $name = $product["name"];
-        $price = $product["price"];
-        $size = $product["size"] ? $product["size"] : NULL;
-        $weight = $product["weight"] ? $product["weight"] : NULL;
-        $height = $product["height"] ? $product["height"] : NULL;
-        $width = $product["width"] ? $product["width"] : NULL;
-        $length = $product["length"] ? $product["length"] : NULL;
+        //echo(json_encode($product));
+        $sku = $product->sku;
+        echo($sku);
+        $name = $product->name;
+        $price = $product->price;
+        $size = $product->size ? $product->size : "";
+        $weight = $product->weight ? $product->weight : "";
+        $height = $product->height ? $product->height : "";
+        $width = $product->width ? $product->width : "";
+        $length = $product->length ? $product->length : "";
 
         $sql;
         $params = [];
         $error;
-        
-        $sqlctrl = $this->select("SELECT COUNT(*) FROM products WHERE sku=?;",["i", $sku]);
+
+        $sql = "SELECT COUNT(*) FROM products WHERE sku = ?";
+        $params = ["s", $sku];
+        $result = $this->select($sql, $params);
+        $count = $result[0]["COUNT(*)"];
+        echo($count);
         
         if (!$price || !$name || !$sku)
             $error = "Missing required fields";
@@ -62,9 +67,12 @@ class ProductModel extends Database
             $error = "Product SKU cannot be empty";
         else if ($name == "")
             $error = "Product name cannot be empty";
-        else if($sqlctrl)
-            $error = "Product sku exists";
+        else if($count > 0)
+            $error = "Product exists";
+
+            echo($count);
     
+            echo($error);
 
         if ($error)
             throw new Exception($error);
@@ -86,10 +94,20 @@ class ProductModel extends Database
 
     }
 
-    public function removeProducts($products = [])
+    public function removeProducts($skus = [])
     {
-        $sku = array($products);
-        $clause = implode(',', array_fill(0, count($sku), '?'));
-        return $this->createRemove("DELETE FROM products WHERE sku in (" . $clause . ");");
+
+        $sql = "DELETE FROM products WHERE sku IN (";
+        $params = [];
+        $params[] = "s";
+        foreach ($skus as $sku) {
+            $sql .= "?,";
+            $params[] = $sku;
+        }
+        
+        $sql = substr($sql, 0, -1) . ");";
+
+        return $this->createRemove($sql, $params);
     }
+    
 }
