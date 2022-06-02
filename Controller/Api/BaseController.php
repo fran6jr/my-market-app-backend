@@ -3,7 +3,6 @@ class BaseController
 {
     public function __call($name, $arguments)
     {
-        echo("call function\n");
         $this->sendOutput('', array('HTTP/1.1 404 Not Found'));
     }
  
@@ -29,8 +28,9 @@ class BaseController
                 header($httpHeader);
             }
         }
- 
+
         echo $data;
+
         exit;
     }
 }

@@ -6,16 +6,12 @@ class Database
     public function __construct()
     {
         try {
-            // echo("Connecting to MySQL");
             $this->connection = new mysqli(DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE_NAME);
-            // echo("After Connecting to MySQL");
 
             if ( mysqli_connect_errno()) {
-                echo("Cannot Connect");
                 throw new Exception("Could not connect to database.");   
             }
         } catch (Exception $e) {
-            echo("Exception leading to Getmessage");
             throw new Exception($e->getMessage());   
         }           
     }
@@ -26,7 +22,7 @@ class Database
             $stmt = $this->executeStatement( $query , $params);
             $product = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);               
             $stmt->close();
- 
+
             return $product;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );
@@ -34,29 +30,24 @@ class Database
         return false;
     }
 
-    public function createRemove($query = "", $params = []) {
-        echo("createRemove");
-        
-        echo($query);
+    public function createRemove($query = "", $params = []) {        
         
         try {
             $stmt = $this->executeStatement( $query , $params);
             $stmt->close();
+
             return true;
         } catch(Exception $e) {
             throw New Exception( $e->getMessage() );
         }
-        echo("createRemove Ends");
+
         return false;
     }
  
     private function executeStatement($query = "", $params = [])
     {
-        
         try {
             $stmt = $this->connection->prepare( $query );
-            echo("Execute function");
-            echo($query);
  
             if($stmt === false) {
                 throw New Exception("Unable to do prepared statement: " . $query);
@@ -69,7 +60,7 @@ class Database
                 }
                 call_user_func_array(array($stmt, 'bind_param'), $refs);
             }
- 
+
             $stmt->execute();
  
             return $stmt;

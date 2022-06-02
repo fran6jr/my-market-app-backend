@@ -11,7 +11,6 @@ class ProductModel extends Database
     public function addProduct($product)
     {
         $sku = $product->sku;
-        echo($sku);
         $name = $product->name;
         $price = $product->price;
         $size = $product->size ? $product->size : "";
@@ -19,6 +18,7 @@ class ProductModel extends Database
         $height = $product->height ? $product->height : "";
         $width = $product->width ? $product->width : "";
         $length = $product->length ? $product->length : "";
+
 
         $sql;
         $params = [];
@@ -28,13 +28,12 @@ class ProductModel extends Database
         $params = ["s", $sku];
         $result = $this->select($sql, $params);
         $count = $result[0]["COUNT(*)"];
+
         
         if (!$price || !$name || !$sku)
             $error = "Missing required fields";
         else if ($weight && $size)
             $error = "Product cannot have both weight and size";
-        else if ($height && $width && $length)
-            $error = "Product dimensions are correct";
         else if ($height && $width && !$length)
             $error = "Furniture must have length";
         else if ($height && !$width && $length)
@@ -45,6 +44,8 @@ class ProductModel extends Database
             $error = "Product cannot have weight and dimensions";
         else if ($size && ($height || $width || $length))
             $error = "Product cannot have size and dimensions";
+        else if (($size || $weight) && ($height || $width || $length))
+            $error = "Product cannot have dimensions, size, and weight";
         else if (!$weight && !$size && !$height && !$width && !$length)
             $error = "Product must have weight, size, or dimensions";
         else if ($weight && $weight < 0)
@@ -65,6 +66,7 @@ class ProductModel extends Database
             $error = "Product name cannot be empty";
         else if($count > 0)
             $error = "Product exists";
+
 
         if ($error)
             throw new Exception($error);
