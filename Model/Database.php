@@ -55,6 +55,8 @@ class Database
         
         try {
             $stmt = $this->connection->prepare( $query );
+            echo("Execute function");
+            echo($query);
  
             if($stmt === false) {
                 throw New Exception("Unable to do prepared statement: " . $query);
