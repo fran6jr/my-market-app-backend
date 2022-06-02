@@ -5,7 +5,7 @@ class ProductModel extends Database
 {
     public function getProducts($limit)
     {
-        echo("GET Products\n");
+        // echo("GET Products\n");
         return $this->select("SELECT * FROM products LIMIT ?;", ["i", $limit]);
     }
 
@@ -22,13 +22,68 @@ class ProductModel extends Database
         $width = $product["width"] ? $product["width"] : NULL;
         $length = $product["length"] ? $product["length"] : NULL;
 
+        $sql;
+        $params = [];
+        $error;
+        
         $sqlctrl = $this->select("SELECT COUNT(*) FROM products WHERE sku=?;",["i", $sku]);
+        
+        if (!$price || !$name || !$sku)
+            $error = "Missing required fields";
+        else if ($weight && $size)
+            $error = "Product cannot have both weight and size";
+        else if ($height && $width && $length)
+            $error = "Product dimensions are correct";
+        else if ($height && $width && !$length)
+            $error = "Furniture must have length";
+        else if ($height && !$width && $length)
+            $error = "Furniture must have width";
+        else if (!$height && $width && $length)
+            $error = "Furniture must have height";
+        else if ($weight && ($height || $width || $length))
+            $error = "Product cannot have weight and dimensions";
+        else if ($size && ($height || $width || $length))
+            $error = "Product cannot have size and dimensions";
+        else if (!$weight && !$size && !$height && !$width && !$length)
+            $error = "Product must have weight, size, or dimensions";
+        else if ($weight && $weight < 0)
+            $error = "Product weight must be greater than 0";
+        else if ($size && $size < 0)
+            $error = "Product size must be greater than 0";
+        else if ($height && $height < 0)
+            $error = "Product height must be greater than 0";
+        else if ($width && $width < 0)
+            $error = "Product width must be greater than 0";
+        else if ($length && $length < 0)
+            $error = "Product length must be greater than 0";
+        else if ($price < 0)
+            $error = "Product price must be greater than 0";
+        else if ($sku == "")
+            $error = "Product SKU cannot be empty";
+        else if ($name == "")
+            $error = "Product name cannot be empty";
+        else if($sqlctrl)
+            $error = "Product sku exists";
+    
 
-        if($sqlctrl == "0") {
-            return $this->createRemove("INSERT INTO products values(?, ?, ?, ?, ?, ?, ?, ?);", ["i", $sku, $name, $price, $size, $weight, $height, $width, $length]);
+        if ($error)
+            throw new Exception($error);
+        
+        if ($weight) {
+            $sql = "INSERT INTO products (sku, name, price, weight) VALUES (?, ?, ?, ?);";
+            $params = ["ssdi", $sku, $name, $price, $weight];
+        }
+        else if ($size) {
+            $sql = "INSERT INTO products (sku, name, price, size) VALUES (?, ?, ?, ?);";
+            $params = ["ssdi", $sku, $name, $price, $size];
+        }
+        else {
+            $sql = "INSERT INTO products (sku, name, price, height, width, length) VALUES (?, ?, ?, ?, ?, ?);";
+            $params = ["ssdddd", $sku, $name, $price, $height, $width, $length];
         }
 
-        return "product exists";
+        return $this->createRemove($sql, $params);
+
     }
 
     public function removeProducts($products = [])
@@ -37,5 +92,4 @@ class ProductModel extends Database
         $clause = implode(',', array_fill(0, count($sku), '?'));
         return $this->createRemove("DELETE FROM products WHERE sku in (" . $clause . ");");
     }
-
 }

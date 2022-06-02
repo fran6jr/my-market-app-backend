@@ -3,7 +3,7 @@ class ProductController extends BaseController
 {
     public function listAction()
     {
-        echo("Product List\n");
+        // echo("Product List\n");
         $strErrorDesc = '';
         $requestMethod = $_SERVER["REQUEST_METHOD"];
         $arrQueryStringParams = $this->getQueryStringParams();
@@ -11,7 +11,7 @@ class ProductController extends BaseController
         if (strtoupper($requestMethod) == 'GET') {
             try {
                 $ProductModel = new ProductModel();
-                echo("After GET Try\n");
+                // echo("After GET Try\n");
  
                 $intLimit = 100;
                 if (isset($arrQueryStringParams['limit']) && $arrQueryStringParams['limit']) {

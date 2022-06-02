@@ -1,4 +1,5 @@
 <?php
+header("Access-Control-Allow-Origin: http://localhost:3000");
 require __DIR__ . "/inc/bootstrap.php";
 
  
@@ -14,7 +15,7 @@ require PROJECT_ROOT_PATH . "/Controller/Api/ProductController.php";
  
 $objFeedController = new ProductController();
 $strMethodName = $uri[3] . 'Action';
-echo("this is live \n");
+// echo("this is live \n");
 $objFeedController->{$strMethodName}();
 echo("this is the end ");
 
