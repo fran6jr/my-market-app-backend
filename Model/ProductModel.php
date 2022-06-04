@@ -89,18 +89,14 @@ class ProductModel extends Database
     }
 
     public function removeProducts($skus = [])
-    {
-        $sql = "DELETE FROM products WHERE sku IN (";
-        $params = [];
-        $params[] = "s";
+    {        
         foreach ($skus as $sku) {
-            $sql .= "?,";
-            $params[] = $sku;
+            $sql = "DELETE FROM products WHERE sku = ?";
+            $params = ["s", $sku];
+            $this->createRemove($sql, $params);
         }
-        
-        $sql = substr($sql, 0, -1) . ");";
 
-        return $this->createRemove($sql, $params);
+        return true;
     }
     
 }
