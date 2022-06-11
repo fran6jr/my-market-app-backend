@@ -3,79 +3,65 @@ require_once PROJECT_ROOT_PATH . "/Model/Database.php";
  
 class ProductModel extends Database
 {
-    public function getProducts($limit)
+    public function get_Products($limit)
     {
         return $this->select("SELECT * FROM products LIMIT ?;", ["i", $limit]);
     }
 
-    public function addProduct($product)
-    {
+    public function set_Product($product)
+    {        
         $sku = $product->sku;
         $name = $product->name;
         $price = $product->price;
-        $size = $product->size ? $product->size : "";
-        $weight = $product->weight ? $product->weight : "";
-        $height = $product->height ? $product->height : "";
-        $width = $product->width ? $product->width : "";
-        $length = $product->length ? $product->length : "";
+        $size = isset($product->size) ? $product->size : null;
+        $weight = isset($product->weight) ? $product->weight : null;
+        $height = isset($product->height) ? $product->height : null;
+        $width = isset($product->width) ? $product->width : null;
+        $length = isset($product->length) ? $product->length : null;
 
 
         $sql;
-        $params = [];
         $error;
 
         $sql = "SELECT COUNT(*) FROM products WHERE sku = ?";
         $params = ["s", $sku];
         $result = $this->select($sql, $params);
         $count = $result[0]["COUNT(*)"];
-
         
-        if (!$price || !$name || !$sku)
-            $error = "Missing required fields";
-        else if ($weight && $size)
-            $error = "Product cannot have both weight and size";
-        else if ($height && $width && !$length)
-            $error = "Furniture must have length";
-        else if ($height && !$width && $length)
-            $error = "Furniture must have width";
-        else if (!$height && $width && $length)
-            $error = "Furniture must have height";
-        else if ($weight && ($height || $width || $length))
-            $error = "Product cannot have weight and dimensions";
-        else if ($size && ($height || $width || $length))
-            $error = "Product cannot have size and dimensions";
-        else if (($size || $weight) && ($height || $width || $length))
-            $error = "Product cannot have dimensions, size, and weight";
-        else if (!$weight && !$size && !$height && !$width && !$length)
-            $error = "Product must have weight, size, or dimensions";
-        else if ($weight && $weight < 0)
-            $error = "Product weight must be greater than 0";
-        else if ($size && $size < 0)
-            $error = "Product size must be greater than 0";
-        else if ($height && $height < 0)
-            $error = "Product height must be greater than 0";
-        else if ($width && $width < 0)
-            $error = "Product width must be greater than 0";
-        else if ($length && $length < 0)
-            $error = "Product length must be greater than 0";
-        else if ($price < 0)
-            $error = "Product price must be greater than 0";
-        else if ($sku == "")
-            $error = "Product SKU cannot be empty";
-        else if ($name == "")
-            $error = "Product name cannot be empty";
+        if (preg_match('/[^A-Za-z0-9]/', $sku || $name || $size || $weight || $height || $width || $length))
+            $error = 'Invalid data format';
         else if($count > 0)
             $error = "Product exists";
+        else if (!$price || !$name || !$sku)
+            $error = "Missing required fields";
+        else if (isset($weight) && isset($size))
+            $error = "Product cannot have both weight and size";
+        else if (isset($weight) && (isset($height) || isset($width) || isset($length)))
+            $error = "Product cannot have weight and dimensions";
+        else if (isset($size) && (isset($height) || isset($width) || isset($length)))
+            $error = "Product cannot have size and dimensions";
+        else if ((isset($size) || isset($weight)) && (isset($height) || isset($width) || isset($length)))
+            $error = "Product must be of a type";
+        else if ((isset($height) || isset($width) || isset($length)) && !(isset($height) && isset($width) && isset($length)))
+            $error = "Product must have all dimensions";
+        else if (!isset($weight) && !isset($size) && !isset($height) && !isset($width) && !isset($length))
+            $error = "Product must have weight, size, or dimensions";
+        if (($price < 0) || (isset($weight) && $weight < 0) || (isset($size) && $size < 0) || (isset($height) && $height < 0) || (isset($width) && $width < 0) || (isset($length) && $length < 0))
+            $error = "Invalid data - Input of type number must be positive";
+        else if (!isset($sku))
+            $error = "Product SKU cannot be empty";
+        else if (!isset($name))
+            $error = "Product name cannot be empty";
 
 
-        if ($error)
+        if (isset($error))
             throw new Exception($error);
         
-        if ($weight) {
+        if (isset($weight)) {
             $sql = "INSERT INTO products (sku, name, price, weight) VALUES (?, ?, ?, ?);";
             $params = ["ssdi", $sku, $name, $price, $weight];
         }
-        else if ($size) {
+        else if (isset($size)) {
             $sql = "INSERT INTO products (sku, name, price, size) VALUES (?, ?, ?, ?);";
             $params = ["ssdi", $sku, $name, $price, $size];
         }
@@ -88,8 +74,15 @@ class ProductModel extends Database
 
     }
 
-    public function removeProducts($skus = [])
-    {        
+    public function remove_Products($skus = [])
+    { 
+        if (count($skus) == 0)
+            throw new Exception('No Products Selected');
+        foreach ($skus as $sku) {
+            if (preg_match('/[^A-Za-z0-9]/', $sku))
+            throw new Exception('Invalid data format');
+        }
+
         foreach ($skus as $sku) {
             $sql = "DELETE FROM products WHERE sku = ?";
             $params = ["s", $sku];

@@ -1,0 +1,10 @@
+{
+    "name": "fakabuogu/api",
+    "authors": [
+        {
+            "name": "Francis Akabuogu",
+            "email": "fakabuogu@gmail.com"
+        }
+    ],
+    "require": {}
+}
